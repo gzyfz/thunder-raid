@@ -1,7 +1,3 @@
-{-# LANGUAGE BlockArguments #-}
-{-# OPTIONS_GHC -Wno-overlapping-patterns #-}
-{-# OPTIONS_GHC -Wno-incomplete-patterns #-}
-{-# LANGUAGE TemplateHaskell #-}
 module View (view) where
 
 import Brick
@@ -30,10 +26,8 @@ view' s =
 
 
 
-      
-
 header :: PlayState -> String
-header s = printf "Thunder raid , row = %d, col = %d"  (pRow p) (pCol p)
+header s = printf "Thunder Raid Turn = %s, row = %d, col = %d" (show (psTurn s)) (pRow p) (pCol p)
   where 
     p    = psPos s
 
@@ -42,43 +36,44 @@ mkRow s row = hTile [ mkCell s row i | i <- [1..dim] ]
 
 mkCell :: PlayState -> Int -> Int -> Widget n
 mkCell s r c 
-  | isCurr s r c = center (mkXO (Just O ))
-  | psTurn s == O&& r==dim&& c==1 = center (mkXO (Just X )) 
-  | otherwise    = center (mkXO Nothing )
+  | isCurr s r c = center (mkXO (Just X) )
+  | otherwise    = raw 
+  where
+    raw = mkCell' s r c
 
 
 
--- mkCell' :: PlayState -> Int -> Int -> Widget n
--- -- mkCell' _ r c = center (str (printf "(%d, %d)" r c))
--- mkCell' s r c = center (mkXO xoMb)
---   where 
---     xoMb 
---       | r == 1 && c==1  = Just X 
---       | r == dim && c==1    = Just O 
---       | otherwise = Nothing
 
-  
+mkCell' :: PlayState -> Int -> Int -> Widget n
+-- mkCell' _ r c = center (str (printf "(%d, %d)" r c))
+mkCell' s r c = center (mkXO xoMb)
+  where 
+    -- xoMb      = psBoard s ! Pos r c
+    xoMb 
+      | pRow(psOPos s) == r  && pCol (psOPos s) == c   = Just O
+      -- | r > c     = Just O 
+      | otherwise = Nothing
 
 mkXO :: Maybe XO -> Widget n
 mkXO Nothing  = blockB
 mkXO (Just X) = blockX
 mkXO (Just O) = blockO
 
-
 blockB, blockX, blockO :: Widget n
 blockB = vBox (replicate 5 (str "     "))
-blockX = vBox [ str "   _   ",
+blockO= vBox [ str "   _   ",
                 str "<  |  >",
                 str "  | |  ",
                 str "   V   " ]
-blockO = vBox [ str "    *    ",
+blockX = vBox [ str "    *    ",
                 str "   |||   ",
                 str "  * | *  ",
                 str "<| | | |>",
                 str " _* | *_ "]
 
+
 vTile :: [Widget n] -> Widget n
-vTile (b:bs) =  vBox (b : [hBorder <=> b | b <- bs])
+vTile (b:bs) = vBox (b : [hBorder <=> b | b <- bs])
 vTile _      = emptyWidget
 
 hTile :: [Widget n] -> Widget n

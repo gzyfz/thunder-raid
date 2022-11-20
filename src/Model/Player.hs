@@ -21,12 +21,14 @@ human :: Player
 human = Player "human" (\p _ _ -> return p)
 
 rando :: Player 
-rando = Player "machine" randomStrategy
+rando = Player "machine" (\p _ _ -> return  p)
 
 randomStrategy :: a -> Board -> b -> IO Pos
-randomStrategy _ b _ = selectRandom (emptyPositions b) 
+randomStrategy p b _ = selectRandom (emptyPositions b) 
 
 selectRandom :: [a] -> IO a
 selectRandom xs = do
   i <- randomRIO (0, length xs - 1)
   return (xs !! i)
+
+  

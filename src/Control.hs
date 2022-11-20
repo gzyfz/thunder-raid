@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-incomplete-patterns #-}
 module Control where
 
 import Brick hiding (Result)
@@ -8,12 +9,14 @@ import Model
 import Model.Board
 import Control.Monad.IO.Class (MonadIO(liftIO))
 import Model.Player
+import Debug.Trace
+import qualified Model.Board as Board
 -- import Model.Player 
 
 -------------------------------------------------------------------------------
 
 control :: PlayState -> BrickEvent n Tick -> EventM n (Next PlayState)
-control s ev = case ev of 
+control s ev = case ev of
   AppEvent Tick                   -> nextS s =<< liftIO (play O s)
   T.VtyEvent (V.EvKey V.KEnter _) -> nextS s =<< liftIO (play X s)
   T.VtyEvent (V.EvKey V.KUp   _)  -> Brick.continue (move up    s)
@@ -32,13 +35,27 @@ move f s = s { psPos = f (psPos s) }
 play :: XO -> PlayState -> IO (Result Board)
 -------------------------------------------------------------------------------
 play xo s
-  | psTurn s == xo = put (psBoard s) xo <$> getPos xo s 
+  | xo == O = do 
+           
+                    pos <- getPos xo s
+                    -- traceM $ "original string is " ++ show (pRow pos)
+                  
+                    return( put (psBoard s) xo pos )
+  | xo == X  = do 
+           
+                    pos <- getPos xo s
+                    -- traceM $ "original string is " ++ show (pCol (psOPos s))
+   
+                    return( put (psBoard s) xo pos )
   | otherwise      = return Retry
+   
 
 getPos :: XO -> PlayState -> IO Pos
-getPos xo s = getStrategy xo s (psPos s) (psBoard s) xo
+getPos xo s
+   | xo == X = getStrategy xo s (psPos s) (psBoard s) xo
+   | xo == O =  getStrategy xo s (psOPos s) (psBoard s) xo
 
-getStrategy :: XO -> PlayState -> Strategy 
+getStrategy :: XO -> PlayState -> Strategy
 getStrategy X s = plStrat (psX s)
 getStrategy O s = plStrat (psO s)
 
@@ -47,6 +64,6 @@ nextS :: PlayState -> Result Board -> EventM n (Next PlayState)
 -------------------------------------------------------------------------------
 nextS s b = case next s b of
   Right s' -> continue s'
-  Left res -> halt (s { psResult = res }) 
+  Left res -> halt (s { psResult = res })
 
 
