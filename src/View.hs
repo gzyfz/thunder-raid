@@ -2,13 +2,13 @@ module View (view) where
 
 import Brick
 import Brick.Widgets.Center (center)
-import Brick.Widgets.Border (borderWithLabel, hBorder, vBorder)
+import Brick.Widgets.Border (borderWithLabel)
 import Brick.Widgets.Border.Style (unicode)
 import Text.Printf (printf)
 
 import Model
-import Model.Board
-import Graphics.Vty hiding (dim)
+import Board
+import Graphics.Vty()
 
 -------------------------------------------------------------------------------
 view :: PlayState -> [Widget String]
@@ -18,59 +18,48 @@ view s = [view' s]
 view' :: PlayState -> Widget String
 view' s = 
   withBorderStyle unicode $
-    borderWithLabel (str ("")) $
+    borderWithLabel (str (header s)) $
       vTile (reverseList [ mkRow s row | row <- [1..dimY] ])
-       where       
-      reverseList [] = []
-      reverseList (x:xs) = reverseList xs ++ [x]
-
-
+      where       
+        reverseList [] = []
+        reverseList (x:xs) = reverseList xs ++ [x]
 
 header :: PlayState -> String
-header s = printf "Thunder Raid Turn = %s, row = %d, col = %d" (show (psTurn s)) (pRow p) (pCol p)
-  where 
-    p    = psPos s
+header _ = printf "Thunder Raid"
 
 mkRow :: PlayState -> Int -> Widget n
 mkRow s row = hTile [ mkCell s row i | i <- [1..dimX] ]
 
 mkCell :: PlayState -> Int -> Int -> Widget n
 mkCell s r c 
-  | isCurr s r c = center (mkXO (Just X) )
-  | otherwise    = raw 
-  where
-    raw = mkCell' s r c
+  | playerPos s == Pos r c                 = center (mkPiece (Just Player))
+  | (psBoard s) ! (Pos r c) == Just Enemy  = center (mkPiece (Just Enemy))
+  | (psBoard s) ! (Pos r c) == Just Bullet = center (mkPiece (Just Bullet))
+  | otherwise                              = center (mkPiece Nothing)
 
+mkPiece :: Maybe Piece -> Widget n
+mkPiece Nothing  = block_none
+mkPiece (Just Player) = block_player
+mkPiece (Just Enemy) = block_enemy
+mkPiece (Just Bullet) = block_bullet
 
-
-
-mkCell' :: PlayState -> Int -> Int -> Widget n
--- mkCell' _ r c = center (str (printf "(%d, %d)" r c))
-mkCell' s r c = center (mkXO xoMb)
-  where 
-    -- xoMb      = psBoard s ! Pos r c
-    xoMb 
-      | pRow(psOPos s) == r  && pCol (psOPos s) == c   = Just O
-      -- | r > c     = Just O 
-      | otherwise = Nothing
-
-mkXO :: Maybe XO -> Widget n
-mkXO Nothing  = blockB
-mkXO (Just X) = blockX
-mkXO (Just O) = blockO
-
-blockB, blockX, blockO :: Widget n
-blockB = vBox (replicate 5 (str "     "))
-blockO= vBox [ str "   _   ",
-               str "<  |  >",
-               str "  | |  ",
-               str "   V   " ]
-blockX = vBox [ str "    *    ",
-                str "   |||   ",
-                str "  * | *  ",
-                str "<| | | |>",
-                str " _* | *_ "]
-
+block_none, block_enemy, block_player :: Widget n
+block_none   = vBox (replicate 5 (str "         "))
+block_enemy  = vBox [ str "    _    ",
+                      str " <  |  > ",
+                      str "   | |   ",
+                      str "    V    ",
+                      str "         " ]
+block_player = vBox [ str "    ^    ",
+                      str "   |||   ",
+                      str "  ^ | ^  ",
+                      str "<| | | |>",
+                      str " _* ^ *_ "]
+block_bullet = vBox [ str "         ",
+                      str "    ^    ",
+                      str "   |||   ",
+                      str "   ***    ",
+                      str "         "]
 
 vTile :: [Widget n] -> Widget n
 vTile (b:bs) = vBox (b : bs)

@@ -1,10 +1,9 @@
 {-# LANGUAGE DeriveFunctor #-}
-module Model.Board 
+module Board 
   ( -- * Types
     Board
-  , XO (..)
+  , Piece (..)
   , Pos (..)
-  , Result (..)
 
     -- * Board API
   , dimX
@@ -12,10 +11,10 @@ module Model.Board
   , (!)
   , init
   , put
+  , del
+  , update
   , positions
   , emptyPositions
-  , boardWinner
-  , flipXO
 
     -- * Moves
   , up
@@ -27,16 +26,18 @@ module Model.Board
 
 import Prelude hiding (init)
 import qualified Data.Map as M 
+import Data.Maybe (fromJust)
 
 -------------------------------------------------------------------------------
 -- | Board --------------------------------------------------------------------
 -------------------------------------------------------------------------------
 
-type Board = M.Map Pos XO
+type Board = M.Map Pos Piece
 
-data XO 
-  = X 
-  | O
+data Piece
+  = Player
+  | Enemy
+  | Bullet
   deriving (Eq, Show)
 
 data Pos = Pos 
@@ -45,7 +46,7 @@ data Pos = Pos
   }
   deriving (Eq, Ord)
 
-(!) :: Board -> Pos -> Maybe XO 
+(!) :: Board -> Pos -> Maybe Piece
 board ! pos = M.lookup pos board
 
 dimX :: Int
@@ -60,47 +61,20 @@ emptyPositions :: Board -> [Pos]
 emptyPositions board  = [ p | p <- positions, M.notMember p board]
 
 init :: Board
-init = M.empty
+init = put (Just Player) (Pos 1 8) M.empty
 
--------------------------------------------------------------------------------
--- | Playing a Move
--------------------------------------------------------------------------------
-                 
-data Result a 
-  = Draw 
-  | Win XO
-  | Retry 
-  | Cont a
-  deriving (Eq, Functor, Show)
+put :: Maybe Piece -> Pos -> Board -> Board
+put piece pos board
+  | piece == Nothing = board
+  | otherwise        = M.insert pos (fromJust piece) board
 
-put :: Board -> XO -> Pos -> Result Board
-put board xo pos = case M.lookup pos board of 
-  Just _  -> Retry
-  Nothing -> result (M.insert pos xo board) 
+del :: Pos -> Board -> Board
+del pos board = M.delete pos board
 
-result :: Board -> Result Board
-result b 
-  | isFull b  = Draw
-  | wins b X  = Win  X 
-  | wins b O  = Win  O
-  | otherwise = Cont b
+update :: Pos -> Pos -> Board -> Board
+update oldpos newpos board = put piece newpos (del oldpos board)
+                             where piece = board ! oldpos
 
-wins :: Board -> XO -> Bool
-wins b xo = or [ winsPoss b xo ps | ps <- winPositions ]
-
-winsPoss :: Board -> XO -> [Pos] -> Bool
-winsPoss b xo ps = and [ b!p == Just xo | p <- ps ]
-
-winPositions :: [[Pos]]
-winPositions = rows ++ cols
-
-rows, cols :: [[Pos]]
-rows  = [[Pos r c | c <- [1..dimX]] | r <- [1..dimY]]
-cols  = [[Pos r c | r <- [1..dimY]] | c <- [1..dimX]]
-
-isFull :: Board -> Bool
-isFull b = M.size b == dimX * dimY
- 
 -------------------------------------------------------------------------------
 -- | Moves 
 -------------------------------------------------------------------------------
@@ -123,12 +97,4 @@ left p = p
 right :: Pos -> Pos 
 right p = p 
   { pCol = min dimX (pCol p + 1) 
-  } 
-
-boardWinner :: Result a -> Maybe XO
-boardWinner (Win xo) = Just xo
-boardWinner _        = Nothing
-
-flipXO :: XO -> XO
-flipXO X = O
-flipXO O = X
+  }
