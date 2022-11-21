@@ -25,7 +25,7 @@ main = do
   let buildVty = V.mkVty V.defaultConfig
   initialVty <- buildVty
   res <- customMain initialVty buildVty (Just chan) app (Model.init rounds)
-
+  print"finish"
 
 app :: App PlayState Tick String
 app = App
