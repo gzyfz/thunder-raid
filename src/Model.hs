@@ -41,7 +41,7 @@ init n = PS
   , psTurn   = Board.X
   , psPos    = head Board.positions
   , psResult = Board.Cont ()
-  , psOPos = Board.Pos  dim 1
+  , psOPos = Board.Pos  dimY 1
   }
 
 isCurr :: PlayState -> Int -> Int -> Bool

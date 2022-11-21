@@ -7,7 +7,8 @@ module Model.Board
   , Result (..)
 
     -- * Board API
-  , dim
+  , dimX
+  , dimY
   , (!)
   , init
   , put
@@ -47,11 +48,13 @@ data Pos = Pos
 (!) :: Board -> Pos -> Maybe XO 
 board ! pos = M.lookup pos board
 
-dim :: Int
-dim = 10
+dimX :: Int
+dimY :: Int
+dimX = 15
+dimY = 10
 
 positions :: [Pos]
-positions = [ Pos r c | r <- [1..dim], c <- [1..dim] ] 
+positions = [ Pos r c | r <- [1..dimY], c <- [1..dimX] ] 
 
 emptyPositions :: Board -> [Pos]
 emptyPositions board  = [ p | p <- positions, M.notMember p board]
@@ -89,15 +92,14 @@ winsPoss :: Board -> XO -> [Pos] -> Bool
 winsPoss b xo ps = and [ b!p == Just xo | p <- ps ]
 
 winPositions :: [[Pos]]
-winPositions = rows ++ cols ++ diags 
+winPositions = rows ++ cols
 
-rows, cols, diags :: [[Pos]]
-rows  = [[Pos r c | c <- [1..dim]] | r <- [1..dim]]
-cols  = [[Pos r c | r <- [1..dim]] | c <- [1..dim]]
-diags = [[Pos i i | i <- [1..dim]], [Pos i (dim+1-i) | i <- [1..dim]]]
+rows, cols :: [[Pos]]
+rows  = [[Pos r c | c <- [1..dimX]] | r <- [1..dimY]]
+cols  = [[Pos r c | r <- [1..dimY]] | c <- [1..dimX]]
 
 isFull :: Board -> Bool
-isFull b = M.size b == dim * dim
+isFull b = M.size b == dimX * dimY
  
 -------------------------------------------------------------------------------
 -- | Moves 
@@ -105,7 +107,7 @@ isFull b = M.size b == dim * dim
 
 up :: Pos -> Pos 
 up p = p 
-  { pRow = min dim (pRow p + 1) 
+  { pRow = min dimY (pRow p + 1) 
   } 
 
 down :: Pos -> Pos
@@ -120,7 +122,7 @@ left p = p
 
 right :: Pos -> Pos 
 right p = p 
-  { pCol = min dim (pCol p + 1) 
+  { pCol = min dimX (pCol p + 1) 
   } 
 
 boardWinner :: Result a -> Maybe XO

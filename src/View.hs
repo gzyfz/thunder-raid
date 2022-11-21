@@ -18,8 +18,8 @@ view s = [view' s]
 view' :: PlayState -> Widget String
 view' s = 
   withBorderStyle unicode $
-    borderWithLabel (str (header s)) $
-      vTile (reverseList [ mkRow s row | row <- [1..dim] ])
+    borderWithLabel (str ("")) $
+      vTile (reverseList [ mkRow s row | row <- [1..dimY] ])
        where       
       reverseList [] = []
       reverseList (x:xs) = reverseList xs ++ [x]
@@ -32,7 +32,7 @@ header s = printf "Thunder Raid Turn = %s, row = %d, col = %d" (show (psTurn s))
     p    = psPos s
 
 mkRow :: PlayState -> Int -> Widget n
-mkRow s row = hTile [ mkCell s row i | i <- [1..dim] ]
+mkRow s row = hTile [ mkCell s row i | i <- [1..dimX] ]
 
 mkCell :: PlayState -> Int -> Int -> Widget n
 mkCell s r c 
@@ -62,9 +62,9 @@ mkXO (Just O) = blockO
 blockB, blockX, blockO :: Widget n
 blockB = vBox (replicate 5 (str "     "))
 blockO= vBox [ str "   _   ",
-                str "<  |  >",
-                str "  | |  ",
-                str "   V   " ]
+               str "<  |  >",
+               str "  | |  ",
+               str "   V   " ]
 blockX = vBox [ str "    *    ",
                 str "   |||   ",
                 str "  * | *  ",
@@ -73,9 +73,9 @@ blockX = vBox [ str "    *    ",
 
 
 vTile :: [Widget n] -> Widget n
-vTile (b:bs) = vBox (b : [hBorder <=> b | b <- bs])
+vTile (b:bs) = vBox (b : bs)
 vTile _      = emptyWidget
 
 hTile :: [Widget n] -> Widget n
-hTile (b:bs) = hBox (b : [vBorder <+> b | b <- bs])
+hTile (b:bs) = hBox (b : bs)
 hTile _      = emptyWidget
