@@ -13,6 +13,8 @@ module Board
   , put
   , del
   , update
+  , refresh
+  , refreshAll
   , positions
   , emptyPositions
 
@@ -71,10 +73,19 @@ put piece pos board
 del :: Pos -> Board -> Board
 del pos board = M.delete pos board
 
-update :: Pos -> Pos -> Board -> Board
-update oldpos newpos board = put piece newpos (del oldpos board)
-                             where piece = board ! oldpos
+update :: Pos -> (Pos -> Pos) -> Board -> Board
+update pos move board = put piece (move pos) (del pos board)
+                          where piece = board ! pos
 
+refresh :: Pos -> Board -> Board
+refresh pos board
+  | piece == Just Bullet  = update pos up   board
+  | piece == Just Enemy   = update pos down board
+  | otherwise             = board
+  where piece = board ! pos
+
+refreshAll :: Board -> Board
+refreshAll board = foldr refresh board positions
 -------------------------------------------------------------------------------
 -- | Moves 
 -------------------------------------------------------------------------------

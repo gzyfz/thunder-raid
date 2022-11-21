@@ -12,7 +12,7 @@ import Board
 
 control :: PlayState -> BrickEvent n Tick -> EventM n (Next PlayState)
 control s ev = case ev of
-  -- AppEvent Tick                   -> 
+  AppEvent Tick                   -> Brick.continue (updateAll s)
   T.VtyEvent (V.EvKey V.KUp   _)  -> Brick.continue (generate Bullet s)
   T.VtyEvent (V.EvKey V.KDown _)  -> Brick.continue (generate Enemy s)
   T.VtyEvent (V.EvKey V.KLeft _)  -> Brick.continue (move left  s)
@@ -23,7 +23,7 @@ control s ev = case ev of
 -------------------------------------------------------------------------------
 move :: (Pos -> Pos) -> PlayState -> PlayState
 -------------------------------------------------------------------------------
-move f s = s { psBoard = update oldpos newpos (psBoard s),
+move f s = s { psBoard = update oldpos f (psBoard s),
                playerPos = newpos }
             where oldpos = playerPos s
                   newpos = f oldpos
@@ -35,3 +35,8 @@ generate piece s
   | piece == Bullet = s { psBoard = put (Just Bullet) (Pos 2 x)  (psBoard s) }
   | piece == Enemy  = s { psBoard = put (Just Enemy)  (Pos 10 x) (psBoard s) }
   where x = pCol (playerPos s)
+
+-------------------------------------------------------------------------------
+updateAll :: PlayState -> PlayState
+-------------------------------------------------------------------------------
+updateAll s = s { psBoard = refreshAll (psBoard s)}
