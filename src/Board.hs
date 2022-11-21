@@ -13,7 +13,10 @@ module Board
   , put
   , del
   , update
-  , refresh
+  , updateBullet
+  , updateEnemy
+  , refreshBullet
+  , refreshEnemy
   , refreshAll
   , positions
   , emptyPositions
@@ -77,15 +80,26 @@ update :: Pos -> (Pos -> Pos) -> Board -> Board
 update pos move board = put piece (move pos) (del pos board)
                           where piece = board ! pos
 
-refresh :: Pos -> Board -> Board
-refresh pos board
-  | piece == Just Bullet  = update pos up   board
+updateBullet :: Pos -> Board -> Board
+updateBullet pos board
+  | piece == Just Bullet  = update pos up board
+  | otherwise             = board
+  where piece = board ! pos
+
+updateEnemy :: Board -> Pos -> Board
+updateEnemy board pos
   | piece == Just Enemy   = update pos down board
   | otherwise             = board
   where piece = board ! pos
 
+refreshBullet :: Board -> Board
+refreshBullet board = foldr updateBullet board positions
+
+refreshEnemy :: Board -> Board
+refreshEnemy board = foldl updateEnemy board positions
+
 refreshAll :: Board -> Board
-refreshAll board = foldr refresh board positions
+refreshAll board = refreshEnemy (refreshBullet board)
 -------------------------------------------------------------------------------
 -- | Moves 
 -------------------------------------------------------------------------------
