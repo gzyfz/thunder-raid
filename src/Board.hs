@@ -70,8 +70,9 @@ init = put (Just Player) (Pos 1 8) M.empty
 
 put :: Maybe Piece -> Pos -> Board -> Board
 put piece pos board
-  | piece == Nothing = board
-  | otherwise        = M.insert pos (fromJust piece) board
+  | pRow pos > dimY || pRow pos < 1 = board
+  | piece == Nothing                = board
+  | otherwise                       = M.insert pos (fromJust piece) board
 
 del :: Pos -> Board -> Board
 del pos board = M.delete pos board
@@ -106,12 +107,12 @@ refreshAll board = refreshEnemy (refreshBullet board)
 
 up :: Pos -> Pos 
 up p = p 
-  { pRow = min dimY (pRow p + 1) 
+  { pRow = pRow p + 1 
   } 
 
 down :: Pos -> Pos
 down p = p 
-  { pRow = max 1 (pRow p - 1) 
+  { pRow = pRow p - 1 
   } 
 
 left :: Pos -> Pos 
