@@ -1,6 +1,17 @@
 module View (view,enemyAttr,playerAttr) where
 
 import Brick
+    ( attrName,
+      (<+>),
+      (<=>),
+      emptyWidget,
+      hBox,
+      str,
+      vBox,
+      withAttr,
+      withBorderStyle,
+      AttrName,
+      Widget )
 import Brick.Widgets.Center (center, hCenterLayer, hCenter)
 import Brick.Widgets.Border (borderWithLabel, border)
 import Brick.Widgets.Border.Style (unicode)
@@ -49,14 +60,14 @@ mkPiece (Just Bullet) = blockBullet
 block_none, block_enemy, block_player :: Widget n
 block_none   = vBox (replicate 5 (str "         "))
 block_enemy  = vBox [ str "    _    ",
-                      str " <  |  > ",
-                      str "   | |   ",
+                      str " <--|--> ",
+                      str "   |||   ",
                       str "    V    ",
                       str "         " ]
 block_player = vBox [ str "    ^    ",
                       str "   |||   ",
-                      str "  ^ | ^  ",
-                      str "<| | | |>",
+                      str "  ^|||^  ",
+                      str "<|||||||>",
                       str " _* ^ *_ "]
 block_bullet = vBox [ str "         ",
                       str "    ^    ",

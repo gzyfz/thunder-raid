@@ -10,13 +10,13 @@ import Brick.BChan (newBChan, writeBChan)
 import Control.Monad (forever)
 import Control.Concurrent (threadDelay, forkIO)
 
-import Model
+import Model ( PlayState, Tick(..), init )
 import View ( view, enemyAttr, playerAttr) 
-import Control 
+import Control ( control ) 
 import System.Environment (getArgs)
 import Text.Read (readMaybe)
 import Data.Maybe (fromMaybe)
-import Brick.AttrMap
+import Brick.AttrMap ( attrMap, AttrMap )
 
 -------------------------------------------------------------------------------
 main :: IO ()

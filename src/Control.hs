@@ -4,10 +4,17 @@ module Control where
 import Brick ( EventM, Next, BrickEvent(AppEvent), halt, continue)
 import qualified Graphics.Vty as V
 import qualified Brick.Types as T
-import System.Random
-import System.CPUTime
+import System.Random ( getStdRandom, Random(randomR) )
+import System.CPUTime ()
 import Model ( PlayState(playerPos, psBoard, playerScore,playerTime), Tick(..) )
 import Board
+    ( Pos(Pos, pCol),
+      Piece(Enemy, Bullet),
+      put,
+      update,
+      refreshAll,
+      left,
+      right )
 
 -------------------------------------------------------------------------------
 hardLevel :: Int

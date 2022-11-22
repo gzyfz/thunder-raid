@@ -2,7 +2,7 @@
 module Model where
 
 import Prelude hiding ((!!))
-import Board
+import Board ( Pos(Pos), Board, init )
 
 -------------------------------------------------------------------------------
 -- | Ticks mark passing of time: a custom event that we constantly stream
