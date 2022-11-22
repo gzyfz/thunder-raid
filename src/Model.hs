@@ -20,11 +20,15 @@ data State
 
 data PlayState = PS
   { psBoard  :: Board.Board,
-    playerPos :: Board.Pos
+    playerPos :: Board.Pos,
+    playerScore :: Int,
+    playerTime  :: Int
   }
 
 init :: PlayState
 init = PS
   { psBoard  = Board.init,
-    playerPos = Pos 1 8
+    playerPos = Pos 1 8,
+    playerScore  = 0,
+    playerTime  = 0
   }

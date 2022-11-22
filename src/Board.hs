@@ -33,6 +33,7 @@ import Prelude hiding (init)
 import qualified Data.Map as M 
 import Data.Maybe (fromJust)
 
+
 -------------------------------------------------------------------------------
 -- | Board --------------------------------------------------------------------
 -------------------------------------------------------------------------------
@@ -101,6 +102,10 @@ refreshEnemy board = foldl updateEnemy board positions
 
 refreshAll :: Board -> Board
 refreshAll board = refreshEnemy (refreshBullet board)
+
+
+
+
 -------------------------------------------------------------------------------
 -- | Moves 
 -------------------------------------------------------------------------------

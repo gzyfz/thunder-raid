@@ -1,18 +1,22 @@
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Redundant bracket" #-}
 module Main where
 
-import Brick
-import Graphics.Vty.Attributes
+
+import Brick ( customMain, App(..) )
+import Graphics.Vty.Attributes ( defAttr,withForeColor )
 import qualified Graphics.Vty as V
 import Brick.BChan (newBChan, writeBChan)
 import Control.Monad (forever)
 import Control.Concurrent (threadDelay, forkIO)
 
 import Model
-import View 
+import View ( view, enemyAttr, playerAttr) 
 import Control 
 import System.Environment (getArgs)
 import Text.Read (readMaybe)
 import Data.Maybe (fromMaybe)
+import Brick.AttrMap
 
 -------------------------------------------------------------------------------
 main :: IO ()
@@ -24,8 +28,8 @@ main = do
     threadDelay 100000 -- decides how fast your game moves
   let buildVty = V.mkVty V.defaultConfig
   initialVty <- buildVty
-  res <- customMain initialVty buildVty (Just chan) app (Model.init)
-  print"finish"
+  res <-customMain  initialVty buildVty (Just chan) app (Model.init)
+  print "finish"
 
 app :: App PlayState Tick String
 app = App
@@ -33,7 +37,7 @@ app = App
   , appChooseCursor = const . const Nothing
   , appHandleEvent  = control 
   , appStartEvent   = return
-  , appAttrMap      = const (attrMap defAttr [])
+  , appAttrMap      = const (theMap)
   }
 
 getRounds :: IO (Maybe Int)
@@ -45,3 +49,13 @@ getRounds = do
 
 defaultRounds :: Int
 defaultRounds = 3
+
+
+theMap :: AttrMap
+theMap = attrMap V.defAttr
+  [ 
+  (enemyAttr , defAttr `withForeColor` V.brightRed ),
+  (playerAttr , defAttr `withForeColor` V.cyan )
+
+  ]
+
