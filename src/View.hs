@@ -1,20 +1,22 @@
 module View (view,enemyAttr,playerAttr) where
 
 import Brick
-import Brick.Widgets.Center (center, hCenterLayer)
+import Brick.Widgets.Center (center, hCenterLayer, hCenter)
 import Brick.Widgets.Border (borderWithLabel, border)
 import Brick.Widgets.Border.Style (unicode)
 import Text.Printf (printf)
 
-import Model ( PlayState(playerPos, psBoard, playerTime) )
+import Model ( PlayState(playerPos, psBoard, playerTime, playerScore) )
 import Board ( (!), dimX, dimY, Piece(..), Pos(Pos) )
 import Graphics.Vty()
 import Control (totalTime, unitTime)
+import qualified Brick.Widgets.Border as B
+import qualified Brick.Widgets.Border.Style as BS
 
 -------------------------------------------------------------------------------
 view :: PlayState -> [Widget String]
 -------------------------------------------------------------------------------
-view s = [view' s <=> drawTimeBox s]
+view s = [view' s <=> (drawTimeBox s <+> drawScore s) ]
 
 view' :: PlayState -> Widget String
 view' s =
@@ -41,7 +43,7 @@ mkCell s r c
 mkPiece :: Maybe Piece -> Widget n
 mkPiece Nothing  = block_none
 mkPiece (Just Player) = blockPlayer
-mkPiece (Just Enemy) = blockEnemy 
+mkPiece (Just Enemy) = blockEnemy
 mkPiece (Just Bullet) = blockBullet
 
 block_none, block_enemy, block_player :: Widget n
@@ -73,10 +75,19 @@ vTile _      = emptyWidget
 
 
 drawTimeBox ::PlayState -> Widget n
-drawTimeBox s =  hCenterLayer (str "Time Left : " <+> 
-                      border (hBox (replicate (min totalTime (timeOut (playerTime s))) (str ">") 
-                      ++ replicate (max 0 (totalTime-timeOut (playerTime s)) ) (str " ")  )))
 
+drawTimeBox s =     withBorderStyle BS.unicodeBold
+                      $ B.borderWithLabel (str "Time")
+                      $ hBox (replicate (min totalTime (timeOut (playerTime s))) (str "▇")
+                      ++ replicate (max 0 (totalTime-timeOut (playerTime s)) ) (str " ")  )
+
+
+drawScore :: PlayState  -> Widget String
+drawScore s = withBorderStyle BS.unicodeBold
+  $ B.borderWithLabel (str "Score")
+  $ hCenter
+  $ str $ show n
+  where n = playerScore s
 
 timeOut :: Int -> Int
 timeOut t
