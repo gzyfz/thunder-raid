@@ -60,18 +60,18 @@ mkPiece (Just Bullet) = blockBullet
 block_none, block_enemy, block_player :: Widget n
 block_none   = vBox (replicate 5 (str "         "))
 block_enemy  = vBox [ str "    _    ",
-                      str " <--|--> ",
-                      str "   |||   ",
+                      str " <-T|T-> ",
+                      str "   |H|   ",
                       str "    V    ",
                       str "         " ]
 block_player = vBox [ str "    ^    ",
-                      str "   |||   ",
-                      str "  ^|||^  ",
-                      str "<|||||||>",
+                      str "   | |   ",
+                      str "  ^|H|^  ",
+                      str "<|||H|||>",
                       str " _* ^ *_ "]
 block_bullet = vBox [ str "         ",
                       str "    ^    ",
-                      str "   |||   ",
+                      str "   |H|   ",
                       str "   ***    ",
                       str "         "]
 
