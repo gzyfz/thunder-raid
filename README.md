@@ -2,6 +2,10 @@
 
 Thunder Raid is a fun plane shoot up game with different stages and a funky design style. 
 
+start by running 
+$ stack build
+$ stack run
+
 ## Game Design
 We will develop a shooting game with simple UI written in Haskell. 
 
