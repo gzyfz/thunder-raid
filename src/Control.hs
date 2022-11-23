@@ -15,11 +15,12 @@ import Board
       refreshAll,
       left,
       right,
-      sumExplosion )
+      sumExplosion,
+      getPlayerPos )
 
 -------------------------------------------------------------------------------
 hardLevel :: Int
-hardLevel = 80
+hardLevel = 100
 
 totalTime:: Int
 totalTime = 100
@@ -32,7 +33,7 @@ control :: PlayState -> BrickEvent n Tick -> EventM n (Next PlayState)
 
 control s ev  
   | (playerTime  s)  == totalTime * unitTime = Brick.halt s
- 
+  | (playerPos s) == (Pos 0 0)               = Brick.halt s
   | otherwise  =   case ev of
   AppEvent Tick                   ->
     do
@@ -57,10 +58,11 @@ control s ev
 -------------------------------------------------------------------------------
 move :: (Pos -> Pos) -> PlayState -> PlayState
 -------------------------------------------------------------------------------
-move f s = s { psBoard = update oldpos f (psBoard s),
+move f s = s { psBoard = newboard, 
                playerPos = newpos }
             where oldpos = playerPos s
-                  newpos = f oldpos
+                  newboard = update oldpos f (psBoard s)
+                  newpos = getPlayerPos newboard
 
 -------------------------------------------------------------------------------
 generate :: Piece -> Int -> PlayState -> PlayState
@@ -70,18 +72,26 @@ generate piece x s
   | piece == Bullet = s { psBoard = put (Just Bullet) (Pos 2 x)  (psBoard s) }
   | piece == Enemy  = s { psBoard = put (Just Enemy)  (Pos 10 x) (psBoard s) }
 
-
-
-
 -------------------------------------------------------------------------------
 -- updateAll :: PlayState -> PlayState
 -------------------------------------------------------------------------------
-updateAllAndAddEnemy s x  =  s { playerTime =  time + 1, psBoard = refreshAll (psBoard (generate Enemy x s)), playerScore = (sumExplosion (psBoard s)) + (playerScore s)}
-                            where time = playerTime  s
+
+updateAllAndAddEnemy s x  = s { playerTime =  time + 1,
+                                psBoard = newboard,
+                                playerScore = score + (sumExplosion newboard),
+                                playerPos = getPlayerPos newboard }
+                            where time = playerTime s
+                                  score = playerScore s
+                                  newboard = refreshAll (psBoard (generate Enemy x s))
 
 
-updateAllOnly s   =  s { playerTime =  time + 1, psBoard = refreshAll (psBoard s), playerScore = (sumExplosion (psBoard s)) + (playerScore s)}
-                      where time =playerTime  s
+updateAllOnly s = s { playerTime =  time + 1,
+                      psBoard = newboard,
+                      playerScore = score + (sumExplosion newboard),
+                      playerPos = getPlayerPos newboard }
+                      where time = playerTime s
+                            score = playerScore s
+                            newboard = refreshAll (psBoard s)
 
 -- randomly choose whether to refresh the screen or generate a new enemy brfore refreshing
 

@@ -21,6 +21,7 @@ module Board
   , positions
   , emptyPositions
   , sumExplosion
+  , getPlayerPos
 
     -- * Moves
   , up
@@ -112,6 +113,15 @@ countExplosion board pos n
 
 sumExplosion :: Board -> Int
 sumExplosion board = foldr (countExplosion board) 0 positions
+
+scanPlayerPos :: Board -> Pos -> Pos -> Pos
+scanPlayerPos board newpos oldpos
+  | piece == Just Player = newpos
+  | otherwise            = oldpos
+  where piece = board ! newpos
+
+getPlayerPos :: Board -> Pos
+getPlayerPos board = foldr (scanPlayerPos board) (Pos 0 0) positions
 
 refreshBullet :: Board -> Board
 refreshBullet board = foldr updateBullet board positions

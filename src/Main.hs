@@ -10,7 +10,7 @@ import Brick.BChan (newBChan, writeBChan)
 import Control.Monad (forever)
 import Control.Concurrent (threadDelay, forkIO)
 import Text.Printf (printf)
-import Model (playerScore, PlayState, Tick(..), init )
+import Model ( PlayState(playerScore), Tick(..), init )
 import View ( view, enemyAttr, playerAttr, explosionAttr) 
 import Control ( control ) 
 import Brick.AttrMap ( attrMap, AttrMap )
@@ -43,4 +43,3 @@ theMap = attrMap V.defAttr
   (playerAttr , defAttr `withForeColor` V.cyan ),
   (explosionAttr , defAttr `withForeColor` V.yellow )
   ]
-

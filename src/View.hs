@@ -12,12 +12,12 @@ import Brick
       withBorderStyle,
       AttrName,
       Widget )
-import Brick.Widgets.Center (center, hCenterLayer, hCenter)
-import Brick.Widgets.Border (borderWithLabel, border)
+import Brick.Widgets.Center (center, hCenter)
+import Brick.Widgets.Border (borderWithLabel)
 import Brick.Widgets.Border.Style (unicode)
 import Text.Printf (printf)
 
-import Model ( PlayState(playerPos, psBoard, playerTime, playerScore) )
+import Model ( PlayState(psBoard, playerTime, playerScore) )
 import Board ( (!), dimX, dimY, Piece(..), Pos(Pos) )
 import Graphics.Vty()
 import Control (totalTime, unitTime)
@@ -46,7 +46,7 @@ mkRow s row = hTile [ mkCell s row i | i <- [1..dimX] ]
 
 mkCell :: PlayState -> Int -> Int -> Widget n
 mkCell s r c
-  | playerPos s == Pos r c                 = center (mkPiece (Just Player))
+  | (psBoard s) ! (Pos r c) == Just Player = center (mkPiece (Just Player))
   | (psBoard s) ! (Pos r c) == Just Enemy  = center (mkPiece (Just Enemy))
   | (psBoard s) ! (Pos r c) == Just Bullet = center (mkPiece (Just Bullet))
   | (psBoard s) ! (Pos r c) == Just Explosion = center (mkPiece (Just Explosion))
@@ -76,11 +76,11 @@ block_bullet = vBox [ str "         ",
                       str "   |H|   ",
                       str "   ***   ",
                       str "         "]
-block_explosion = vBox [ str "  * * *  ",
+block_explosion = vBox [ str "    *    ",
                          str " * * * * ",
-                         str "* *   * *",
+                         str "* * * * *",
                          str " * * * * ",
-                         str "  * * *  "]
+                         str "    *    "]
 
 
 
