@@ -15,7 +15,7 @@ We will develop a shooting game with simple UI written in Haskell.
 
 ### Game Logic:
 
-We plan to build a Thunder Raid game where players can hit other small/big planes with bullets. Players are able to move a plane at the bottom horizontally to shoot the bullets. The game ends when the player's plane is crashed by other planes. We plan to add some extra features based on the traditional Thuder Raid game. (For example, supplies that enhance plane's speed/double the bullets etc.)
+We plan to build a Thunder Raid game where players can hit other small/big planes with bullets. Players are able to move a plane at the bottom horizontally to shoot the bullets. The game ends when the player's plane is crashed by other planes. We plan to add some extra features based on the traditional Thunder Raid game. (For example, supplies that enhance plane's speed/double the bullets etc.)
 
 ## Group
 
