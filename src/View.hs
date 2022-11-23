@@ -1,4 +1,4 @@
-module View (view,enemyAttr,playerAttr) where
+module View (view, enemyAttr, playerAttr, explosionAttr) where
 
 import Brick
     ( attrName,
@@ -49,6 +49,7 @@ mkCell s r c
   | playerPos s == Pos r c                 = center (mkPiece (Just Player))
   | (psBoard s) ! (Pos r c) == Just Enemy  = center (mkPiece (Just Enemy))
   | (psBoard s) ! (Pos r c) == Just Bullet = center (mkPiece (Just Bullet))
+  | (psBoard s) ! (Pos r c) == Just Explosion = center (mkPiece (Just Explosion))
   | otherwise                              = center (mkPiece Nothing)
 
 mkPiece :: Maybe Piece -> Widget n
@@ -56,8 +57,9 @@ mkPiece Nothing  = block_none
 mkPiece (Just Player) = blockPlayer
 mkPiece (Just Enemy) = blockEnemy
 mkPiece (Just Bullet) = blockBullet
+mkPiece (Just Explosion) = blockExplosion
 
-block_none, block_enemy, block_player :: Widget n
+block_none, block_enemy, block_player, block_explosion :: Widget n
 block_none   = vBox (replicate 5 (str "         "))
 block_enemy  = vBox [ str "    _    ",
                       str " <-T|T-> ",
@@ -72,9 +74,13 @@ block_player = vBox [ str "    ^    ",
 block_bullet = vBox [ str "         ",
                       str "    ^    ",
                       str "   |H|   ",
-                      str "   ***    ",
+                      str "   ***   ",
                       str "         "]
-
+block_explosion = vBox [ str "  * * *  ",
+                         str " * * * * ",
+                         str "* *   * *",
+                         str " * * * * ",
+                         str "  * * *  "]
 
 
 
@@ -120,6 +126,8 @@ blockPlayer = withAttr playerAttr block_player
 blockBullet :: Widget n
 blockBullet = withAttr bulletAttr block_bullet
 
+blockExplosion :: Widget n
+blockExplosion = withAttr explosionAttr block_explosion
 
 enemyAttr :: AttrName
 enemyAttr = attrName "enemyAttr"
@@ -129,3 +137,6 @@ playerAttr  = attrName "playerAttr "
 
 bulletAttr :: AttrName
 bulletAttr  = attrName "bulletAttr"
+
+explosionAttr :: AttrName
+explosionAttr = attrName "explosionAttr"

@@ -20,6 +20,7 @@ module Board
   , refreshAll
   , positions
   , emptyPositions
+  , sumExplosion
 
     -- * Moves
   , up
@@ -44,6 +45,7 @@ data Piece
   = Player
   | Enemy
   | Bullet
+  | Explosion
   deriving (Eq, Show)
 
 data Pos = Pos 
@@ -73,7 +75,9 @@ put :: Maybe Piece -> Pos -> Board -> Board
 put piece pos board
   | pRow pos > dimY || pRow pos < 1 = board
   | piece == Nothing                = board
+  | original /= Nothing             = M.insert pos (Explosion) board
   | otherwise                       = M.insert pos (fromJust piece) board
+  where original = board ! pos
 
 del :: Pos -> Board -> Board
 del pos board = M.delete pos board
@@ -94,17 +98,32 @@ updateEnemy board pos
   | otherwise             = board
   where piece = board ! pos
 
+updateExplosion :: Pos -> Board -> Board
+updateExplosion pos board
+  | piece == Just Explosion = del pos board
+  | otherwise               = board
+  where piece = board ! pos
+
+countExplosion :: Board -> Pos -> Int -> Int
+countExplosion board pos n
+  | piece == Just Explosion = n + 1
+  | otherwise               = n
+  where piece = board ! pos
+
+sumExplosion :: Board -> Int
+sumExplosion board = foldr (countExplosion board) 0 positions
+
 refreshBullet :: Board -> Board
 refreshBullet board = foldr updateBullet board positions
 
 refreshEnemy :: Board -> Board
 refreshEnemy board = foldl updateEnemy board positions
 
+refreshExplosion :: Board -> Board
+refreshExplosion board = foldr updateExplosion board positions
+
 refreshAll :: Board -> Board
-refreshAll board = refreshEnemy (refreshBullet board)
-
-
-
+refreshAll board = refreshEnemy (refreshBullet (refreshExplosion board))
 
 -------------------------------------------------------------------------------
 -- | Moves 

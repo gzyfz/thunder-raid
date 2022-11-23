@@ -11,7 +11,7 @@ import Control.Monad (forever)
 import Control.Concurrent (threadDelay, forkIO)
 
 import Model ( PlayState, Tick(..), init )
-import View ( view, enemyAttr, playerAttr) 
+import View ( view, enemyAttr, playerAttr, explosionAttr) 
 import Control ( control ) 
 import System.Environment (getArgs)
 import Text.Read (readMaybe)
@@ -55,7 +55,7 @@ theMap :: AttrMap
 theMap = attrMap V.defAttr
   [ 
   (enemyAttr , defAttr `withForeColor` V.brightRed ),
-  (playerAttr , defAttr `withForeColor` V.cyan )
-
+  (playerAttr , defAttr `withForeColor` V.cyan ),
+  (explosionAttr , defAttr `withForeColor` V.yellow )
   ]
 

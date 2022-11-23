@@ -6,7 +6,7 @@ import qualified Graphics.Vty as V
 import qualified Brick.Types as T
 import System.Random ( getStdRandom, Random(randomR) )
 import System.CPUTime ()
-import Model ( PlayState(playerPos, psBoard, playerScore,playerTime), Tick(..) )
+import Model ( PlayState(playerPos, psBoard, playerScore, playerTime), Tick(..) )
 import Board
     ( Pos(Pos, pCol),
       Piece(Enemy, Bullet),
@@ -14,7 +14,8 @@ import Board
       update,
       refreshAll,
       left,
-      right )
+      right,
+      sumExplosion )
 
 -------------------------------------------------------------------------------
 hardLevel :: Int
@@ -75,11 +76,11 @@ generate piece x s
 -------------------------------------------------------------------------------
 -- updateAll :: PlayState -> PlayState
 -------------------------------------------------------------------------------
-updateAllAndAddEnemy s x  =  s { playerTime =  time + 1, psBoard = refreshAll (psBoard (generate Enemy x s))}
+updateAllAndAddEnemy s x  =  s { playerTime =  time + 1, psBoard = refreshAll (psBoard (generate Enemy x s)), playerScore = (sumExplosion (psBoard s)) + (playerScore s)}
                             where time = playerTime  s
 
 
-updateAllOnly s   =  s { playerTime =  time + 1, psBoard = refreshAll (psBoard s)}
+updateAllOnly s   =  s { playerTime =  time + 1, psBoard = refreshAll (psBoard s), playerScore = (sumExplosion (psBoard s)) + (playerScore s)}
                       where time =playerTime  s
 
 -- randomly choose whether to refresh the screen or generate a new enemy brfore refreshing
