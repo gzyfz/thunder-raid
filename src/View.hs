@@ -62,20 +62,19 @@ mkPiece (Just Explosion) = blockExplosion
 block_none, block_enemy, block_player, block_explosion :: Widget n
 block_none   = vBox (replicate 5 (str "         "))
 block_enemy  = vBox [ str "    _    ",
-                      str " <-T|T-> ",
-                      str "   |H|   ",
-                      str "    V    ",
+                      str " <-┠⊙┨-> ",
+                      str "   ┃█┃   ",
+                      str "    V   ",
                       str "         " ]
-block_player = vBox [ str "    ^    ",
-                      str "   | |   ",
-                      str "  ^|H|^  ",
-                      str "<|||H|||>",
-                      str " _* ^ *_ "]
+block_player = vBox [ str "    ▲    ",
+                      str "   ┃ ┃   ",
+                      str "  ^┃◐┃^  ",
+                      str "◀|▥|█|▥|▶",
+                      str " ┗┛´¨`┗┛ "]
 block_bullet = vBox [ str "         ",
-                      str "    ^    ",
-                      str "   |H|   ",
-                      str "   ***   ",
-                      str "         "]
+                      str "    ▲    ",
+                      str "   ┠✪┫  ",
+                      str "   ┗▬┛   " ]
 block_explosion = vBox [ str "    *    ",
                          str " * * * * ",
                          str "* * * * *",
