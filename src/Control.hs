@@ -78,20 +78,27 @@ generate piece x s
 
 updateAllAndAddEnemy s x  = s { playerTime =  time + 1,
                                 psBoard = newboard,
-                                playerScore = score + (sumExplosion newboard),
-                                playerPos = getPlayerPos newboard }
-                            where time = playerTime s
-                                  score = playerScore s
-                                  newboard = refreshAll (psBoard (generate Enemy x s))
-
+                                playerScore = newscore,
+                                playerPos = newpos }
+                                where time = playerTime s
+                                      score = playerScore s
+                                      newboard = refreshAll (psBoard (generate Enemy x s))
+                                      newpos = getPlayerPos newboard
+                                      newscore 
+                                        | newpos /= Pos 0 0 = score + (sumExplosion newboard)
+                                        | otherwise = score
 
 updateAllOnly s = s { playerTime =  time + 1,
                       psBoard = newboard,
-                      playerScore = score + (sumExplosion newboard),
-                      playerPos = getPlayerPos newboard }
+                      playerScore = newscore,
+                      playerPos = newpos }
                       where time = playerTime s
                             score = playerScore s
                             newboard = refreshAll (psBoard s)
+                            newpos = getPlayerPos newboard
+                            newscore 
+                              | newpos /= Pos 0 0 = score + (sumExplosion newboard)
+                              | otherwise = score
 
 -- randomly choose whether to refresh the screen or generate a new enemy brfore refreshing
 
