@@ -24,6 +24,7 @@ data PlayState = PS
     playerScore :: Int,
     playerTime  :: Int
   }
+  deriving (Eq, Show)
 
 init :: PlayState
 init = PS
