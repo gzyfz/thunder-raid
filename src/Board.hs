@@ -1,5 +1,5 @@
-{-# LANGUAGE DeriveFunctor #-}
-module Board 
+
+module Board
   ( -- * Types
     Board
   , Piece (..)
@@ -22,6 +22,7 @@ module Board
   , emptyPositions
   , sumExplosion
   , getPlayerPos
+  , refreshExplosion
 
     -- * Moves
   , up
@@ -32,7 +33,7 @@ module Board
   where
 
 import Prelude hiding (init)
-import qualified Data.Map as M 
+import qualified Data.Map as M
 import Data.Maybe (fromJust)
 
 
@@ -49,11 +50,11 @@ data Piece
   | Explosion
   deriving (Eq, Show)
 
-data Pos = Pos 
+data Pos = Pos
   { pRow :: Int  -- 1 <= pRow <= dim 
   , pCol :: Int  -- 1 <= pCol <= dim
   }
-  deriving (Eq, Ord)
+  deriving (Eq, Ord, Show)
 
 (!) :: Board -> Pos -> Maybe Piece
 board ! pos = M.lookup pos board
@@ -64,7 +65,7 @@ dimX = 15
 dimY = 10
 
 positions :: [Pos]
-positions = [ Pos r c | r <- [1..dimY], c <- [1..dimX] ] 
+positions = [ Pos r c | r <- [1..dimY], c <- [1..dimX] ]
 
 emptyPositions :: Board -> [Pos]
 emptyPositions board  = [ p | p <- positions, M.notMember p board]
@@ -139,22 +140,22 @@ refreshAll board = refreshEnemy (refreshBullet (refreshExplosion board))
 -- | Moves 
 -------------------------------------------------------------------------------
 
-up :: Pos -> Pos 
-up p = p 
-  { pRow = pRow p + 1 
-  } 
+up :: Pos -> Pos
+up p = p
+  { pRow = pRow p + 1
+  }
 
 down :: Pos -> Pos
-down p = p 
-  { pRow = pRow p - 1 
-  } 
+down p = p
+  { pRow = pRow p - 1
+  }
 
-left :: Pos -> Pos 
-left p = p 
-  { pCol   = max 1 (pCol p - 1) 
-  } 
+left :: Pos -> Pos
+left p = p
+  { pCol   = max 1 (pCol p - 1)
+  }
 
-right :: Pos -> Pos 
-right p = p 
-  { pCol = min dimX (pCol p + 1) 
+right :: Pos -> Pos
+right p = p
+  { pCol = min dimX (pCol p + 1)
   }
